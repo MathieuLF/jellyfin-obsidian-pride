@@ -1,0 +1,1617 @@
+/* ==========================================================================
+   JELLYFIN OBSIDIAN PRIDE — Cinema-Grade LGBT+ Dark Theme for Jellyfin 12
+   Author : MathieuLF (https://github.com/MathieuLF/jellyfin-obsidian-pride)
+   License: MIT
+   Design Philosophy:
+     1. Obsidian Velvet Surfaces (OLED black, HDR cinema contrast, WCAG AAA)
+     2. Vibrant, balanced Progress Pride / Queer Cinema spectrum accents
+     3. 0 external dependencies (100% self-hosted & offline friendly)
+     4. 0 :has() selectors for smooth 60fps scrolling on large libraries
+     5. Universal cross-device support (Mobile notches, iPad, Desktop, Smart TV)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. DESIGN TOKENS & JELLYFIN 12 NATIVE INTEGRATION (--jf-palette-*)
+   -------------------------------------------------------------------------- */
+:root,
+:root[data-theme] {
+  /* Obsidian dark velvet surfaces */
+  --bg-void: #070811;
+  --bg-surface: #101324;
+  --bg-elevated: #161a30;
+  --bg-popover: #191e37;
+  --bg-input: #0b0e1d;
+
+  /* Typography (WCAG AAA primary, AA+ secondary) */
+  --text-primary: #f7f4ff;
+  --text-secondary: #bcc3df;
+  --text-muted: #8d96ba;
+
+  /* LGBT+ / Progress Pride palette */
+  --primary-r: 183;
+  --primary-g: 124;
+  --primary-b: 255;
+  --accent-main: #b77cff;
+  --accent-strong: #8b47e6;
+  --accent-soft: #eed0ff;
+  --accent-rose: #ff63a8;
+  --accent-cyan: #5bcefa;
+  --accent-gold: #ffbe55;
+  --accent-emerald: #14b89a;
+
+  /* Pride gradients */
+  --pride-gradient: linear-gradient(
+    90deg,
+    #ff4d79 0%,
+    #ff944d 17%,
+    #ffd452 34%,
+    #3fe0a0 51%,
+    #54c6ff 68%,
+    #a97aff 84%,
+    #f472d0 100%
+  );
+  --pride-vertical: linear-gradient(
+    180deg,
+    #ff5c8a 0%,
+    #ffb35c 26%,
+    #4ae3a7 52%,
+    #5bc8ff 76%,
+    #c68aff 100%
+  );
+  --pride-cta: linear-gradient(118deg, #d62985 0%, #9346f5 52%, #4768f2 100%);
+  --pride-cta-hover: linear-gradient(118deg, #ec3b99 0%, #a85eff 52%, #5d7eff 100%);
+
+  /* Borders, focus rings and radii */
+  --border-subtle: rgba(214, 184, 255, 0.14);
+  --border-strong: rgba(226, 182, 255, 0.32);
+  --focus-ring: #f5c2ff;
+  --focus-glow: rgba(206, 118, 255, 0.42);
+  --rounded-cards: 14px;
+  --bar-radius: 16px;
+
+  /* Native Jellyfin 12 MUI CssVarsProvider tokens (space-separated RGB channels) */
+  --jf-card-borderRadius: 14px;
+  --jf-palette-primary-main: #b77cff;
+  --jf-palette-primary-mainChannel: 183 124 255;
+  --jf-palette-primary-dark: #8b47e6;
+  --jf-palette-primary-contrastText: #ffffff;
+  --jf-palette-secondary-main: #ff63a8;
+  --jf-palette-secondary-contrastText: #0b0914;
+  --jf-palette-background-default: #070811;
+  --jf-palette-background-defaultImage: none;
+  --jf-palette-background-paper: #161a30;
+  --jf-palette-background-paperChannel: 22 26 48;
+  --jf-palette-AppBar-defaultBg: #171830;
+  --jf-palette-AppBar-transparentBg: rgba(11, 13, 26, 0.76);
+  --jf-palette-AppBar-gradient: none;
+  --jf-palette-text-primary: #f7f4ff;
+  --jf-palette-text-secondary: #bcc3df;
+  --jf-palette-common-white: #ffffff;
+  --jf-palette-divider: rgba(214, 184, 255, 0.14);
+  --jf-palette-action-hover: rgba(183, 124, 255, 0.15);
+  --jf-palette-action-focus: rgba(245, 194, 255, 0.24);
+  --jf-palette-action-selectedOpacity: 0.2;
+  --jf-palette-Button-inheritContainedBg: #1b203b;
+  --jf-palette-Button-inheritContainedHoverBg: #2c2454;
+  --jf-palette-FilledInput-bg: #0b0e1d;
+  --jf-palette-FilledInput-borderColor: rgba(206, 174, 255, 0.28);
+  --jf-palette-Alert-infoFilledBg: #271c47;
+  --jf-palette-Alert-infoFilledColor: #f7f4ff;
+  --jf-palette-SnackbarContent-bg: #241940;
+  --jf-palette-SnackbarContent-color: #ffffff;
+  --jf-palette-error-main: #ff4d79;
+  --jf-palette-error-light: #ff7aa2;
+  --jf-palette-error-contrastText: #ffffff;
+}
+
+@media (max-width: 639.98px) {
+  :root,
+  :root[data-theme] {
+    --rounded-cards: 11px;
+    --jf-card-borderRadius: 11px;
+    --bar-radius: 13px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2. CANVAS, AMBIENT PRIDE AURORA & VIDEO PLAYBACK SHELL PROTECTION
+   -------------------------------------------------------------------------- */
+html {
+  background-color: var(--bg-void);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+body:not(.dashboardDocument) {
+  background-color: var(--bg-void) !important;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(183, 124, 255, 0.38) transparent;
+}
+
+html.layout-desktop ::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+html.layout-desktop ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html.layout-desktop ::-webkit-scrollbar-thumb {
+  background-color: rgba(183, 124, 255, 0.34);
+  border-radius: 999px;
+}
+
+html.layout-desktop ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(226, 168, 255, 0.62);
+}
+
+/* Ambient Progress Pride aurora when no backdrop is present */
+body:not(.dashboardDocument) .backgroundContainer:not(.withBackdrop):not(.backgroundContainer-transparent) {
+  background-color: #070811 !important;
+  background-image:
+    radial-gradient(ellipse 75% 55% at 6% 0%, rgba(145, 52, 214, 0.30) 0%, rgba(145, 52, 214, 0) 65%),
+    radial-gradient(ellipse 60% 50% at 94% 6%, rgba(224, 52, 138, 0.19) 0%, rgba(224, 52, 138, 0) 60%),
+    radial-gradient(ellipse 65% 55% at 55% 88%, rgba(56, 138, 236, 0.13) 0%, rgba(56, 138, 236, 0) 65%) !important;
+}
+
+/* Subtle darkened fanart backdrop to maximize text legibility */
+body:not(.dashboardDocument) .backgroundContainer.withBackdrop:not(.backgroundContainer-transparent) {
+  opacity: 0.44 !important;
+}
+
+/* CRITICAL: Jellyfin mounts video UNDER the transparent document shell.
+   Never paint backgrounds over the transparent player shell. */
+html.transparentDocument,
+html.transparentDocument body,
+html.transparentDocument body:not(.dashboardDocument) {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+body:not(.dashboardDocument) .backgroundContainer.backgroundContainer-transparent {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+html.transparentDocument body:not(.dashboardDocument) .MuiAppBar-root::before {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   3. MODERN APP BAR (MuiAppBar) & CLASSIC HEADER (skinHeader)
+   -------------------------------------------------------------------------- */
+body:not(.dashboardDocument) .MuiAppBar-root.MuiAppBar-root {
+  top: max(8px, env(safe-area-inset-top, 0px));
+  left: max(12px, env(safe-area-inset-left, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  width: auto;
+  border-radius: var(--bar-radius) !important;
+  background-color: #1a1832 !important;
+  background-image: linear-gradient(
+    105deg,
+    rgba(46, 25, 68, 0.95) 0%,
+    rgba(24, 23, 46, 0.95) 50%,
+    rgba(19, 32, 54, 0.95) 100%
+  ) !important;
+  border: 1px solid rgba(218, 174, 255, 0.25) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.42), 0 1px 14px rgba(168, 72, 224, 0.14) !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+@media (min-width: 768px) {
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    html:not(.layout-tv) body:not(.dashboardDocument) .MuiAppBar-root.MuiAppBar-root {
+      background-image: linear-gradient(
+        105deg,
+        rgba(46, 25, 68, 0.84) 0%,
+        rgba(24, 23, 46, 0.84) 50%,
+        rgba(19, 32, 54, 0.84) 100%
+      ) !important;
+      -webkit-backdrop-filter: blur(12px) saturate(1.25);
+      backdrop-filter: blur(12px) saturate(1.25);
+    }
+  }
+}
+
+/* Signature Progress Pride crown ribbon */
+body:not(.dashboardDocument) .MuiAppBar-root::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 16px;
+  right: 16px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--pride-gradient);
+  pointer-events: none;
+  z-index: 2;
+}
+
+body:not(.dashboardDocument) .MuiAppBar-root > .MuiToolbar-root {
+  min-height: 54px;
+  padding-inline: 10px;
+  gap: 4px;
+}
+
+body:not(.dashboardDocument) .MuiAppBar-root > .MuiToolbar-root ~ .MuiToolbar-root {
+  min-height: 44px;
+  height: auto;
+  padding-block: 4px;
+  flex-wrap: wrap;
+  border-top: 1px solid rgba(218, 178, 255, 0.14);
+}
+
+/* Toolbar buttons */
+body:not(.dashboardDocument) .MuiToolbar-root .MuiIconButton-root,
+body:not(.dashboardDocument) .MuiToolbar-root .headerButton {
+  color: var(--text-primary) !important;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 999px;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+body:not(.dashboardDocument) .MuiToolbar-root .MuiButton-root {
+  color: var(--text-primary);
+  min-height: 40px;
+  border-radius: 11px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+/* Active navigation item in MUI app bar */
+body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary {
+  position: relative;
+  color: #ffffff !important;
+  background-color: rgba(183, 124, 255, 0.18) !important;
+  box-shadow: inset 0 0 0 1px rgba(224, 178, 255, 0.30);
+}
+
+body:not(.dashboardDocument) header .MuiToolbar-root .MuiButton-textPrimary.MuiButton-colorPrimary::after {
+  content: "";
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--pride-gradient);
+}
+
+/* Classic Jellyfin header (Detail, OSD, TV, Preferences) */
+body:not(.dashboardDocument) .skinHeader {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+body:not(.dashboardDocument) .skinHeader-withBackground:not(.semiTransparent) {
+  background-color: #14172b !important;
+  background-image: linear-gradient(
+    90deg,
+    rgba(42, 22, 62, 0.96) 0%,
+    rgba(20, 23, 43, 0.96) 55%,
+    rgba(17, 29, 50, 0.96) 100%
+  ) !important;
+  border-bottom: 1px solid var(--border-subtle);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+body:not(.dashboardDocument) .skinHeader.semiTransparent {
+  background-color: transparent !important;
+  background-image: linear-gradient(
+    180deg,
+    rgba(7, 8, 17, 0.84) 0%,
+    rgba(7, 8, 17, 0.42) 65%,
+    rgba(7, 8, 17, 0) 100%
+  ) !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html.layout-tv body:not(.dashboardDocument) .skinHeader.semiTransparent {
+  background-image: none !important;
+}
+
+/* Classic tabs */
+body:not(.dashboardDocument) .emby-tab-button {
+  min-height: 38px;
+  padding: 0 14px !important;
+  margin-inline: 3px;
+  border-radius: 999px !important;
+  color: var(--text-secondary) !important;
+  font-weight: 600;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+body:not(.dashboardDocument) .emby-tab-button > .emby-button-foreground {
+  color: inherit !important;
+}
+
+body:not(.dashboardDocument) .emby-tab-button-active {
+  background: rgba(183, 124, 255, 0.22) !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 0 0 1px rgba(226, 178, 255, 0.38);
+}
+
+body:not(.dashboardDocument) .emby-tab-button-active > .emby-button-foreground {
+  color: #ffffff !important;
+}
+
+/* Page top margins clearing the floating app bar */
+body:not(.dashboardDocument) .libraryPage .itemsContainer {
+  margin-top: 20px;
+}
+
+body:not(.dashboardDocument) .userPreferencesPage {
+  padding-top: 28px !important;
+}
+
+body:not(.dashboardDocument) #searchPage {
+  padding-top: 24px !important;
+}
+
+/* Home view airy top and side spacing */
+body:not(.dashboardDocument) #indexPage .sections,
+body:not(.dashboardDocument) #homeTab .sections,
+body:not(.dashboardDocument) .homeSectionsContainer {
+  padding-top: 30px !important;
+}
+
+body:not(.dashboardDocument) #indexPage .section0,
+body:not(.dashboardDocument) #homeTab .section0,
+body:not(.dashboardDocument) #homeTab .sections > :first-child {
+  margin-top: 14px !important;
+}
+
+body:not(.dashboardDocument) #indexPage .padded-left,
+body:not(.dashboardDocument) #homeTab .padded-left,
+body:not(.dashboardDocument) #indexPage .emby-scroller,
+body:not(.dashboardDocument) #homeTab .emby-scroller {
+  padding-left: max(24px, 3.5%) !important;
+}
+
+body:not(.dashboardDocument) #indexPage .padded-right,
+body:not(.dashboardDocument) #homeTab .padded-right {
+  padding-right: max(24px, 3.5%) !important;
+}
+
+#homeTab .card[data-type="CollectionFolder"] .cardBox,
+#indexPage .card[data-type="CollectionFolder"] .cardBox {
+  margin-inline: 8px !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. NAVIGATION DRAWER / SIDEBAR
+   -------------------------------------------------------------------------- */
+body:not(.dashboardDocument) .MuiDrawer-paper.MuiDrawer-paper,
+body:not(.dashboardDocument) .mainDrawer {
+  background-color: #121528 !important;
+  background-image: linear-gradient(180deg, #1b1734 0%, #111426 48%, #0e1424 100%) !important;
+  border-right: 1px solid rgba(218, 176, 255, 0.20) !important;
+  border-radius: 0 20px 20px 0 !important;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-shadow: 12px 0 36px rgba(0, 0, 0, 0.55) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root,
+body:not(.dashboardDocument) .mainDrawer .navMenuOption {
+  border-radius: 12px !important;
+  margin: 3px 10px !important;
+  min-height: 44px;
+  color: var(--text-secondary);
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemIcon-root {
+  color: inherit !important;
+}
+
+body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-selected,
+body:not(.dashboardDocument) .mainDrawer .navMenuOption-selected {
+  background-color: #362054 !important;
+  background-image: linear-gradient(90deg, rgba(182, 72, 224, 0.34), rgba(84, 114, 240, 0.16)) !important;
+  color: #ffffff !important;
+  font-weight: 650;
+  box-shadow: inset 3.5px 0 0 #f09eff;
+}
+
+body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root.Mui-selected .MuiListItemIcon-root {
+  color: var(--accent-soft) !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. HOME PAGE (#indexPage / #homeTab) & SECTION HEADERS
+   -------------------------------------------------------------------------- */
+body:not(.dashboardDocument) .sectionTitle,
+body:not(.dashboardDocument) .sectionTitleTextButton {
+  color: #faf7ff !important;
+  font-weight: 750 !important;
+  letter-spacing: -0.02em;
+}
+
+body:not(.dashboardDocument) .sectionTitle::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 0.92em;
+  margin-right: 0.52em;
+  border-radius: 999px;
+  vertical-align: -0.06em;
+  background: var(--pride-vertical);
+}
+
+.card[data-type="CollectionFolder"] .cardImageContainer {
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+/* Balanced 3-column library showcase on tablet / desktop */
+@media (min-width: 640px) {
+  #homeTab .card[data-type="CollectionFolder"],
+  #indexPage .card[data-type="CollectionFolder"] {
+    width: 33.333333% !important;
+    max-width: none !important;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 639.98px) {
+  #homeTab .card[data-type="CollectionFolder"],
+  #indexPage .card[data-type="CollectionFolder"] {
+    width: 76% !important;
+    min-width: 210px;
+    flex-shrink: 0;
+  }
+}
+
+#homeTab .card[data-type="CollectionFolder"] .cardText,
+#indexPage .card[data-type="CollectionFolder"] .cardText {
+  font-weight: 700 !important;
+  letter-spacing: 0.015em;
+  font-size: 1.02rem;
+}
+
+/* --------------------------------------------------------------------------
+   6. CARDS, POSTERS, BADGES & PROGRESS BARS (60 FPS NO JANK)
+   -------------------------------------------------------------------------- */
+body:not(.dashboardDocument) .card,
+body:not(.dashboardDocument) .cardBox,
+body:not(.dashboardDocument) .cardScalable,
+body:not(.dashboardDocument) .cardPadder,
+body:not(.dashboardDocument) .cardImageContainer,
+body:not(.dashboardDocument) .blurhash-canvas,
+body:not(.dashboardDocument) .cardContent,
+body:not(.dashboardDocument) .cardOverlayContainer {
+  border-radius: var(--rounded-cards) !important;
+}
+
+/* Only image layers clip overflow, preserving title text and TV focus scaling */
+body:not(.dashboardDocument) .cardScalable,
+body:not(.dashboardDocument) .cardPadder,
+body:not(.dashboardDocument) .cardImageContainer,
+body:not(.dashboardDocument) .blurhash-canvas,
+body:not(.dashboardDocument) .cardContent,
+body:not(.dashboardDocument) .cardOverlayContainer {
+  overflow: hidden !important;
+}
+
+body:not(.dashboardDocument) .cardBox {
+  box-shadow: none !important;
+}
+
+body:not(.dashboardDocument) .cardPadder {
+  background: none !important;
+}
+
+body:not(.dashboardDocument) .cardScalable {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.36) !important;
+  transition: transform 170ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 170ms ease;
+}
+
+body:not(.dashboardDocument) .cardImageContainer {
+  background-color: #15182c;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Default card fallback gradients */
+body:not(.dashboardDocument) .defaultCardBackground1 { background: linear-gradient(135deg, #321b52, #181a38) !important; }
+body:not(.dashboardDocument) .defaultCardBackground2 { background: linear-gradient(135deg, #4b1d48, #1c1a3a) !important; }
+body:not(.dashboardDocument) .defaultCardBackground3 { background: linear-gradient(135deg, #1b3556, #181934) !important; }
+body:not(.dashboardDocument) .defaultCardBackground4 { background: linear-gradient(135deg, #273e4d, #16182f) !important; }
+body:not(.dashboardDocument) .defaultCardBackground5 { background: linear-gradient(135deg, #3f2259, #1f1836) !important; }
+
+/* Card text */
+body:not(.dashboardDocument) .cardText {
+  text-align: start !important;
+  padding-inline: 3px;
+  line-height: 1.42;
+}
+
+body:not(.dashboardDocument) .cardText:not(.cardText-secondary) {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+  margin-top: 0.34rem;
+}
+
+body:not(.dashboardDocument) .cardText-secondary,
+body:not(.dashboardDocument) .secondaryText,
+body:not(.dashboardDocument) .fieldDescription {
+  color: var(--text-secondary) !important;
+}
+
+/* Card hover scrim and FAB */
+body:not(.dashboardDocument) .cardOverlayContainer {
+  background: linear-gradient(180deg, rgba(10, 11, 22, 0.18) 0%, rgba(10, 11, 22, 0.68) 100%);
+}
+
+body:not(.dashboardDocument) .cardOverlayFab-primary {
+  background: var(--pride-cta) !important;
+  color: #ffffff !important;
+  border-radius: 999px !important;
+  box-shadow: 0 6px 20px rgba(182, 48, 158, 0.48) !important;
+}
+
+/* Progress bar */
+body:not(.dashboardDocument) .itemProgressBar {
+  height: 5px !important;
+  background-color: rgba(7, 8, 17, 0.86) !important;
+  border-radius: 0 0 var(--rounded-cards) var(--rounded-cards);
+  overflow: hidden;
+  backdrop-filter: none !important;
+}
+
+body:not(.dashboardDocument) .itemProgressBarForeground {
+  background: var(--pride-gradient) !important;
+  border-radius: 999px;
+}
+
+/* Count & watched indicators */
+body:not(.dashboardDocument) .countIndicator,
+body:not(.dashboardDocument) .mediaSourceIndicator {
+  background-color: #8b35d6 !important;
+  background-image: linear-gradient(135deg, #9333ea 0%, #db2777 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45) !important;
+  text-shadow: none !important;
+}
+
+body:not(.dashboardDocument) .playedIndicator {
+  background-color: #0d9488 !important;
+  background-image: linear-gradient(135deg, #059669 0%, #14b8a6 100%) !important;
+  color: #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Multi-select check outline */
+body:not(.dashboardDocument) .checkboxOutline.multiSelectCheckboxOutline {
+  border-radius: var(--rounded-cards) !important;
+}
+
+body:not(.dashboardDocument) .emby-checkbox:checked + span + .checkboxOutline.multiSelectCheckboxOutline {
+  background-color: rgba(147, 70, 245, 0.36) !important;
+  border: 3px solid var(--focus-ring) !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. LIBRARY GRIDS, A–Z PICKER (alphaPicker) & LISTS
+   -------------------------------------------------------------------------- */
+body:not(.dashboardDocument) .alphaPickerRow-vertical {
+  background-color: #12162b;
+  background-color: rgba(16, 19, 36, 0.90);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  padding: 5px 2px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.38);
+}
+
+body:not(.dashboardDocument) .alphaPicker-fixed {
+  right: max(6px, env(safe-area-inset-right, 6px));
+}
+
+body:not(.dashboardDocument) .alphaPickerButton {
+  color: var(--text-secondary) !important;
+  border-radius: 999px !important;
+  font-weight: 600 !important;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+body:not(.dashboardDocument) .alphaPickerButton-selected,
+body:not(.dashboardDocument) .alphaPickerButton-tv:focus {
+  background-color: var(--accent-strong) !important;
+  color: #ffffff !important;
+}
+
+/* List view and episode rows */
+body:not(.dashboardDocument) .paperList {
+  background-color: rgba(20, 24, 45, 0.78) !important;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--rounded-cards) !important;
+  padding: 4px;
+}
+
+body:not(.dashboardDocument) .listItem {
+  border-radius: 12px !important;
+  transition: background-color 140ms ease;
+}
+
+body:not(.dashboardDocument) .listItem-border {
+  border-color: rgba(214, 184, 255, 0.09) !important;
+}
+
+body:not(.dashboardDocument) #childrenContent .listItem {
+  background-color: rgba(19, 23, 44, 0.72);
+  border: 1px solid rgba(214, 184, 255, 0.11);
+  border-radius: 14px !important;
+  margin-bottom: 0.6rem;
+  margin-inline: 0 !important;
+  padding: 0.75rem !important;
+}
+
+/* --------------------------------------------------------------------------
+   8. ITEM DETAILS (#itemDetailPage — Movies, Series, Episodes, Cast)
+   -------------------------------------------------------------------------- */
+body:not(.dashboardDocument) #itemDetailPage .itemBackdrop {
+  position: relative;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .itemBackdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(7, 8, 17, 0.22) 0%,
+    rgba(7, 8, 17, 0.34) 50%,
+    rgba(7, 8, 17, 0.94) 92%,
+    #070811 100%
+  );
+  pointer-events: none;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .detailRibbon {
+  background-color: #111528;
+  background-color: rgba(15, 18, 36, 0.86);
+  border-top: 1px solid rgba(224, 180, 255, 0.16);
+  border-bottom: 1px solid rgba(224, 180, 255, 0.10);
+}
+
+/* Desktop alignment fix: cancels the 25vw float footprint so detailRibbon
+   starts at 0 and its padding-left: 32.45vw lines up flush with content below */
+html.layout-desktop body:not(.dashboardDocument) #itemDetailPage .detailImageContainer .card {
+  margin-right: -25vw !important;
+}
+
+html.layout-desktop body:not(.dashboardDocument)[dir="rtl"] #itemDetailPage .detailImageContainer .card {
+  margin-left: -25vw !important;
+  margin-right: 0 !important;
+}
+
+/* Aligns title logo directly above the title on the same 32.45vw axis */
+html.layout-desktop body:not(.dashboardDocument) #itemDetailPage .detailLogo {
+  display: block !important;
+  left: 32.45vw !important;
+  right: auto !important;
+  top: 5vh !important;
+  width: 32vw !important;
+  max-width: 480px !important;
+  height: 14vh !important;
+  background-position: left bottom !important;
+}
+
+html.layout-desktop body:not(.dashboardDocument) #itemDetailPage .detailRibbon {
+  min-height: 7.2em;
+  height: auto;
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
+
+html.layout-tv body:not(.dashboardDocument) #itemDetailPage .detailRibbon {
+  background: transparent;
+  border: none;
+}
+
+/* Poster visible across all screens */
+body:not(.dashboardDocument) #itemDetailPage .detailImageContainer .card,
+body:not(.dashboardDocument) #itemDetailPage .detailImageContainer .cardBox,
+body:not(.dashboardDocument) #itemDetailPage .detailImageContainer .cardScalable,
+body:not(.dashboardDocument) #itemDetailPage .detailImageContainer .cardImageContainer {
+  border-radius: 16px !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .detailImageContainer .cardScalable {
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(235, 198, 255, 0.18) !important;
+}
+
+/* Title wrapping */
+body:not(.dashboardDocument) #itemDetailPage .nameContainer {
+  flex-wrap: wrap;
+  min-width: 0;
+  gap: 0.15rem;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .itemName {
+  color: #fcfaff !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em;
+  line-height: 1.18;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+html.layout-desktop body:not(.dashboardDocument) #itemDetailPage .itemName {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .parentName,
+body:not(.dashboardDocument) #itemDetailPage .parentName a {
+  color: var(--accent-soft) !important;
+  font-weight: 700;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .tagline {
+  color: #e2cef8 !important;
+  font-style: italic;
+  font-weight: 500;
+  margin-bottom: 0.65rem;
+}
+
+/* Ratings & meta info badges */
+body:not(.dashboardDocument) #itemDetailPage .itemMiscInfo {
+  flex-wrap: wrap;
+  gap: 0.4rem 0.7rem;
+  align-items: center;
+  color: var(--text-secondary);
+}
+
+body:not(.dashboardDocument) .mediaInfoOfficialRating {
+  background-color: rgba(183, 124, 255, 0.18) !important;
+  border: 1px solid rgba(224, 178, 255, 0.38) !important;
+  color: #f6eaff !important;
+  border-radius: 6px !important;
+  padding: 1px 8px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+}
+
+body:not(.dashboardDocument) .starIcon {
+  color: var(--accent-gold) !important;
+}
+
+/* Action buttons */
+body:not(.dashboardDocument) .mainDetailButtons {
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+body:not(.dashboardDocument) .mainDetailButtons .btnPlay,
+body:not(.dashboardDocument) .mainDetailButtons .btnResume,
+body:not(.dashboardDocument) .button-submit,
+body:not(.dashboardDocument) .MuiButton-containedPrimary {
+  background-color: #9346f5 !important;
+  background-image: var(--pride-cta) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 224, 255, 0.28) !important;
+  border-radius: 999px !important;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0 1rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.015em;
+  box-shadow: 0 6px 22px rgba(186, 48, 158, 0.36) !important;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+body:not(.dashboardDocument) .mainDetailButtons .btnPlay .detailButton-icon,
+body:not(.dashboardDocument) .mainDetailButtons .btnPlay .material-icons,
+body:not(.dashboardDocument) .mainDetailButtons .btnPlay span {
+  color: #ffffff !important;
+}
+
+/* Secondary circular buttons */
+body:not(.dashboardDocument) .mainDetailButtons .detailButton:not(.btnPlay):not(.btnResume),
+body:not(.dashboardDocument) .mainDetailButtons .paper-icon-button-light:not(.btnPlay):not(.btnResume) {
+  background-color: rgba(24, 29, 54, 0.88) !important;
+  border: 1px solid rgba(214, 180, 255, 0.24) !important;
+  color: var(--text-primary) !important;
+  min-width: 46px;
+  min-height: 46px;
+  border-radius: 999px !important;
+  padding: 0.55rem !important;
+  margin: 0 !important;
+  transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+/* Favorite heart & played check */
+body:not(.dashboardDocument) .ratingbutton-icon-withrating {
+  color: #ff4d94 !important;
+}
+
+body:not(.dashboardDocument) .playstatebutton-icon-played {
+  color: #34d399 !important;
+}
+
+/* Accent link buttons */
+body:not(.dashboardDocument) .button-accent-flat,
+body:not(.dashboardDocument) .button-link {
+  color: var(--accent-soft) !important;
+}
+
+body:not(.dashboardDocument) div[data-role="controlgroup"] a.ui-btn-active {
+  background-color: #9346f5 !important;
+  background-image: var(--pride-cta) !important;
+  color: #ffffff !important;
+}
+
+/* Overview */
+body:not(.dashboardDocument) #itemDetailPage .overview {
+  color: #eceff9;
+  line-height: 1.65;
+  max-width: 74ch;
+}
+
+/* Technical Specs & Track Selection Panel — strictly uniform row heights & alignments */
+body:not(.dashboardDocument) #itemDetailPage .trackSelections {
+  background-color: rgba(18, 22, 44, 0.72) !important;
+  border: 1px solid rgba(214, 184, 255, 0.20) !important;
+  border-radius: 16px !important;
+  padding: 10px 16px !important;
+  margin-block: 1.1rem !important;
+  max-width: 44rem !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.40) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+/* Each row (Version, Video, Audio, Subtitles) shares the exact same 42px height */
+body:not(.dashboardDocument) #itemDetailPage .trackSelections .selectContainer {
+  display: flex !important;
+  align-items: center !important;
+  min-height: 42px !important;
+  height: 42px !important;
+  margin: 0 !important;
+  padding: 2px 0 !important;
+  border-bottom: 1px solid rgba(214, 184, 255, 0.08) !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .trackSelections .selectContainer:last-child {
+  border-bottom: none !important;
+}
+
+/* Labels: uniform width (7.5rem) and vertical center alignment */
+body:not(.dashboardDocument) #itemDetailPage .trackSelections .selectContainer .selectLabel {
+  flex: 0 0 7.5rem !important;
+  width: 7.5rem !important;
+  font-size: 0.80rem !important;
+  font-weight: 750 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  color: #a6b3d6 !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+  height: 36px !important;
+}
+
+/* All inputs and values (Version, Audio, Subtitles, Video) share 36px height */
+body:not(.dashboardDocument) #itemDetailPage .trackSelections .selectContainer select.detailTrackSelect {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  height: 36px !important;
+  line-height: 34px !important;
+  box-sizing: border-box !important;
+  border-radius: 10px !important;
+  font-size: 0.88rem !important;
+  font-weight: 550 !important;
+  color: #f7f4ff !important;
+  background-color: rgba(11, 14, 28, 0.85) !important;
+  border: 1px solid rgba(206, 174, 255, 0.25) !important;
+  padding: 0 34px 0 12px !important;
+  cursor: pointer !important;
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .trackSelections .selectContainer select.detailTrackSelect:hover {
+  background-color: rgba(22, 26, 52, 0.95) !important;
+  border-color: rgba(232, 176, 255, 0.55) !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .trackSelections .selectContainer select.detailTrackSelect:focus {
+  border-color: var(--focus-ring) !important;
+  box-shadow: 0 0 0 2.5px var(--focus-glow) !important;
+}
+
+/* Non-dropdown spec values (e.g. Video '1080p HEVC SDR' select[disabled]) */
+body:not(.dashboardDocument) #itemDetailPage .trackSelections .selectContainer select.detailTrackSelect[disabled] {
+  background-color: rgba(14, 17, 34, 0.55) !important;
+  border: 1px solid rgba(214, 184, 255, 0.14) !important;
+  box-shadow: none !important;
+  padding: 0 12px !important;
+  height: 36px !important;
+  line-height: 34px !important;
+  color: #ede2ff !important;
+  font-weight: 650 !important;
+  font-size: 0.88rem !important;
+  cursor: default !important;
+  user-select: text !important;
+}
+
+/* Vertically centered chevron */
+body:not(.dashboardDocument) #itemDetailPage .trackSelections .selectContainer .selectArrowContainer {
+  position: absolute !important;
+  right: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: var(--accent-soft) !important;
+  pointer-events: none !important;
+  height: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* External database and website link pill badges */
+body:not(.dashboardDocument) #itemDetailPage .itemExternalLinks {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 8px 10px !important;
+  margin: 1.25rem 0 0.8rem !important;
+  font-size: 0 !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .itemExternalLinks::before {
+  content: "Fiches & Liens :";
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9da8cb;
+  margin-right: 4px;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .itemExternalLinks a.button-link {
+  font-size: 0.84rem !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.02em !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 6px 14px !important;
+  border-radius: 999px !important;
+  background: rgba(26, 30, 58, 0.88) !important;
+  border: 1px solid rgba(214, 180, 255, 0.28) !important;
+  color: #f7f4ff !important;
+  text-decoration: none !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+  transition: transform 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .itemExternalLinks a.button-link::after {
+  content: "↗";
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .itemExternalLinks a.button-link:hover {
+  transform: translateY(-2px);
+  background-color: rgba(46, 32, 78, 0.95) !important;
+  border-color: rgba(236, 178, 255, 0.65) !important;
+  box-shadow: 0 6px 20px rgba(183, 124, 255, 0.32) !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .itemExternalLinks a.button-link[href*="themoviedb.org"]:hover {
+  border-color: #01b4e4 !important;
+  box-shadow: 0 6px 20px rgba(1, 180, 228, 0.35) !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .itemExternalLinks a.button-link[href*="imdb.com"]:hover {
+  border-color: #f5c518 !important;
+  box-shadow: 0 6px 20px rgba(245, 197, 24, 0.35) !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .itemExternalLinks a.button-link[href*="trakt.tv"]:hover {
+  border-color: #ed1c24 !important;
+  box-shadow: 0 6px 20px rgba(237, 28, 36, 0.35) !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .itemExternalLinks a.button-link[href*="thetvdb.com"]:hover {
+  border-color: #3bb34a !important;
+  box-shadow: 0 6px 20px rgba(59, 179, 74, 0.35) !important;
+}
+
+/* Genres & tags as interactive pill badges */
+body:not(.dashboardDocument) #itemDetailPage .itemGenres,
+body:not(.dashboardDocument) #itemDetailPage .itemTags {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 6px 8px !important;
+  margin-block: 0.5rem !important;
+  font-size: 0 !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .itemGenres a,
+body:not(.dashboardDocument) #itemDetailPage .itemTags a {
+  display: inline-flex !important;
+  font-size: 0.80rem !important;
+  font-weight: 600 !important;
+  padding: 4px 11px !important;
+  border-radius: 999px !important;
+  background: rgba(28, 32, 60, 0.70) !important;
+  border: 1px solid rgba(214, 184, 255, 0.20) !important;
+  color: #dfd7ff !important;
+  text-decoration: none !important;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .itemGenres a:hover,
+body:not(.dashboardDocument) #itemDetailPage .itemTags a:hover {
+  background: rgba(183, 124, 255, 0.24) !important;
+  border-color: rgba(236, 178, 255, 0.55) !important;
+  color: #ffffff !important;
+}
+
+/* Production details */
+body:not(.dashboardDocument) #itemDetailPage .itemDetailsGroup {
+  margin-top: 1.5rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .detailsGroupItem {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 0.6rem !important;
+  margin: 0 !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .detailsGroupItem .label {
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  color: #a5b1d4 !important;
+  flex: 0 0 7.5rem !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .detailsGroupItem a.button-link {
+  color: var(--accent-soft) !important;
+  font-weight: 550 !important;
+  text-decoration: none !important;
+  transition: color 140ms ease !important;
+}
+
+body:not(.dashboardDocument) #itemDetailPage .detailsGroupItem a.button-link:hover {
+  color: #ffffff !important;
+  text-decoration: underline !important;
+}
+
+@media (max-width: 511.98px) {
+  body:not(.dashboardDocument) #itemDetailPage .detailImageContainer .card {
+    border-radius: 12px !important;
+  }
+
+  body:not(.dashboardDocument) #itemDetailPage .trackSelections {
+    padding: 0.75rem;
+    max-width: 100%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. VIDEO PLAYER OSD, TRICKPLAY, INTRO SKIPPER, UP NEXT & AUDIO
+   -------------------------------------------------------------------------- */
+body:not(.dashboardDocument) .videoOsdBottom {
+  background: linear-gradient(
+    0deg,
+    rgba(6, 7, 15, 0.92) 0%,
+    rgba(6, 7, 15, 0.56) 58%,
+    rgba(6, 7, 15, 0) 100%
+  ) !important;
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 1.5rem);
+  padding-left: max(env(safe-area-inset-left, 0px), 0.75rem);
+  padding-right: max(env(safe-area-inset-right, 0px), 0.75rem);
+}
+
+/* Scrubber timeline */
+body:not(.dashboardDocument) .mdl-slider-background-flex {
+  height: 6px !important;
+  margin-top: -3px !important;
+  border-radius: 999px !important;
+  background-color: rgba(255, 255, 255, 0.22) !important;
+}
+
+body:not(.dashboardDocument) .mdl-slider-background-upper {
+  background-color: rgba(226, 188, 255, 0.36) !important;
+  border-radius: 999px;
+}
+
+body:not(.dashboardDocument) .mdl-slider-background-lower,
+body:not(.dashboardDocument) .iconOsdProgressInner,
+body:not(.dashboardDocument) .playbackProgress > div {
+  background-color: #b77cff !important;
+  background-image: var(--pride-gradient) !important;
+  border-radius: 999px;
+}
+
+/* Tactile & TV-visible scrubber thumb */
+body:not(.dashboardDocument) .mdl-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px !important;
+  height: 15px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  border: 3px solid #d47aff !important;
+  box-shadow: 0 0 12px rgba(212, 122, 255, 0.85) !important;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+body:not(.dashboardDocument) .mdl-slider::-moz-range-thumb {
+  appearance: none;
+  width: 15px !important;
+  height: 15px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  border: 3px solid #d47aff !important;
+  box-shadow: 0 0 12px rgba(212, 122, 255, 0.85) !important;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+body:not(.dashboardDocument) .mdl-slider-hoverthumb:hover::-webkit-slider-thumb,
+body:not(.dashboardDocument) .mdl-slider.show-focus:focus::-webkit-slider-thumb,
+body:not(.dashboardDocument) .mdl-slider:focus-visible::-webkit-slider-thumb {
+  transform: scale(1.35);
+  box-shadow: 0 0 0 5px rgba(245, 194, 255, 0.35), 0 0 16px rgba(212, 122, 255, 0.95) !important;
+}
+
+body:not(.dashboardDocument) .mdl-slider-hoverthumb:hover::-moz-range-thumb,
+body:not(.dashboardDocument) .mdl-slider.show-focus:focus::-moz-range-thumb,
+body:not(.dashboardDocument) .mdl-slider:focus-visible::-moz-range-thumb {
+  transform: scale(1.35);
+  box-shadow: 0 0 0 5px rgba(245, 194, 255, 0.35), 0 0 16px rgba(212, 122, 255, 0.95) !important;
+}
+
+body:not(.dashboardDocument) .mdl-slider[disabled]::-webkit-slider-thumb {
+  display: none !important;
+}
+
+body:not(.dashboardDocument) .mdl-slider[disabled]::-moz-range-thumb {
+  display: none !important;
+}
+
+/* Trickplay preview thumbnails */
+body:not(.dashboardDocument) .chapterThumbContainer {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  border: 1.5px solid rgba(232, 182, 255, 0.45) !important;
+  background-color: #0b0d19;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.75) !important;
+}
+
+body:not(.dashboardDocument) .chapterThumbTextContainer {
+  background: linear-gradient(0deg, rgba(7, 8, 17, 0.88) 0%, rgba(7, 8, 17, 0) 100%) !important;
+  padding: 0.4rem 0.65rem !important;
+}
+
+/* Skip intro / skip credits button */
+body:not(.dashboardDocument) .skip-button,
+body:not(.dashboardDocument) #skipIntro .btnSkipIntro,
+body:not(.dashboardDocument) #skipIntro .emby-button {
+  background-color: #161830 !important;
+  background-image: linear-gradient(120deg, rgba(38, 24, 66, 0.95), rgba(22, 26, 52, 0.95)) !important;
+  color: #ffffff !important;
+  border: 1.5px solid rgba(236, 176, 255, 0.62) !important;
+  border-radius: 999px !important;
+  padding: 12px 24px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.015em;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.62), 0 0 18px rgba(186, 85, 255, 0.28) !important;
+  transition: opacity 180ms ease, transform 150ms ease, background-image 150ms ease, box-shadow 150ms ease;
+}
+
+body:not(.dashboardDocument) .skip-button:hover,
+body:not(.dashboardDocument) .skip-button:focus,
+body:not(.dashboardDocument) .skip-button:focus-visible,
+body:not(.dashboardDocument) #skipIntro .btnSkipIntro:hover,
+body:not(.dashboardDocument) #skipIntro .btnSkipIntro:focus,
+body:not(.dashboardDocument) #skipIntro .emby-button:hover,
+body:not(.dashboardDocument) #skipIntro .emby-button:focus {
+  background-image: var(--pride-cta) !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(245, 194, 255, 0.48), 0 12px 30px rgba(0, 0, 0, 0.72) !important;
+}
+
+body:not(.dashboardDocument) .skip-button.skip-button-hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+@media (max-width: 639.98px) {
+  body:not(.dashboardDocument) .skip-button-container {
+    bottom: calc(6.2rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  body:not(.dashboardDocument) .skip-button {
+    margin-right: max(1rem, env(safe-area-inset-right, 1rem)) !important;
+    padding: 10px 18px !important;
+    font-size: 0.98rem !important;
+  }
+}
+
+/* Up Next dialog */
+body:not(.dashboardDocument) .upNextContainer,
+body:not(.dashboardDocument) .upNextDialog {
+  background-color: #14182e !important;
+  background-color: rgba(18, 22, 43, 0.96) !important;
+  border: 1px solid rgba(224, 178, 255, 0.30) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.70) !important;
+  max-width: calc(100vw - 2rem);
+}
+
+/* Volume OSD & audio footer */
+body:not(.dashboardDocument) .iconOsd,
+body:not(.dashboardDocument) .volumeOsd {
+  background-color: rgba(18, 21, 40, 0.92) !important;
+  border: 1px solid var(--border-strong);
+  border-radius: 16px !important;
+}
+
+body:not(.dashboardDocument) .appfooter {
+  background-color: #111428 !important;
+  border-top: 1px solid rgba(220, 178, 255, 0.22);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-shadow: 0 -8px 26px rgba(0, 0, 0, 0.45);
+}
+
+/* --------------------------------------------------------------------------
+   10. LOGIN SCREEN (#loginPage) & QUICK CONNECT
+   -------------------------------------------------------------------------- */
+body:not(.dashboardDocument) #loginPage {
+  background-color: #070811 !important;
+  background-image:
+    radial-gradient(ellipse 70% 55% at 15% 8%, rgba(164, 48, 212, 0.38) 0%, rgba(164, 48, 212, 0) 62%),
+    radial-gradient(ellipse 60% 50% at 88% 14%, rgba(232, 56, 136, 0.28) 0%, rgba(232, 56, 136, 0) 58%),
+    radial-gradient(ellipse 65% 55% at 50% 92%, rgba(58, 148, 246, 0.20) 0%, rgba(58, 148, 246, 0) 62%) !important;
+}
+
+body:not(.dashboardDocument) #loginPage .readOnlyContent,
+body:not(.dashboardDocument) #loginPage form.manualLoginForm {
+  max-width: 26.5rem;
+  margin-inline: auto;
+}
+
+body:not(.dashboardDocument) #loginPage .manualLoginForm,
+body:not(.dashboardDocument) #loginPage .visualLoginForm {
+  position: relative;
+  background-color: #13172c;
+  background-color: rgba(18, 21, 41, 0.92);
+  border: 1px solid rgba(224, 180, 255, 0.24);
+  border-radius: 22px;
+  padding: 2rem 1.75rem 1.75rem;
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.58), 0 0 28px rgba(168, 72, 224, 0.14);
+  overflow: hidden;
+}
+
+body:not(.dashboardDocument) #loginPage .manualLoginForm::before,
+body:not(.dashboardDocument) #loginPage .visualLoginForm::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--pride-gradient);
+}
+
+@media (max-width: 479.98px) {
+  body:not(.dashboardDocument) #loginPage .padded-left.padded-right {
+    padding-inline: 1rem !important;
+  }
+
+  body:not(.dashboardDocument) #loginPage .manualLoginForm,
+  body:not(.dashboardDocument) #loginPage .visualLoginForm {
+    padding: 1.5rem 1.15rem 1.35rem;
+    border-radius: 18px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. SEARCH, FORMS, MENUS, DIALOGS, TOASTS & SPINNERS
+   -------------------------------------------------------------------------- */
+body:not(.dashboardDocument) .emby-input,
+body:not(.dashboardDocument) .emby-textarea,
+body:not(.dashboardDocument) .emby-select-withcolor {
+  background-color: var(--bg-input) !important;
+  border: 1.5px solid rgba(196, 168, 255, 0.26) !important;
+  color: var(--text-primary) !important;
+  border-radius: 11px !important;
+  padding: 0.62em 0.85em;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+body:not(.dashboardDocument) .emby-input:focus,
+body:not(.dashboardDocument) .emby-textarea:focus,
+body:not(.dashboardDocument) .emby-select-withcolor:focus {
+  border-color: #df9eff !important;
+  box-shadow: 0 0 0 3px rgba(214, 146, 255, 0.22) !important;
+  outline: none !important;
+}
+
+body:not(.dashboardDocument) .MuiOutlinedInput-root,
+body:not(.dashboardDocument) .MuiFilledInput-root {
+  background-color: var(--bg-input) !important;
+  border-radius: 12px !important;
+  color: var(--text-primary) !important;
+}
+
+/* Checkboxes */
+body:not(.dashboardDocument) .emby-checkbox:checked + span + .checkboxOutline {
+  background-color: var(--accent-strong) !important;
+  border-color: var(--accent-main) !important;
+}
+
+/* Menus, Popovers, Accordions & Dialogs */
+body:not(.dashboardDocument) .MuiMenu-paper,
+body:not(.dashboardDocument) .MuiPopover-paper,
+body:not(.dashboardDocument) .MuiDialog-paper,
+body:not(.dashboardDocument) .dialog,
+body:not(.dashboardDocument) .actionSheetScroller {
+  background-color: var(--bg-popover) !important;
+  background-image: linear-gradient(180deg, #1d1c3a 0%, #151930 100%) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid rgba(220, 178, 255, 0.24) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.62) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body:not(.dashboardDocument) .formDialogHeader:not(.formDialogHeader-clear),
+body:not(.dashboardDocument) .formDialogFooter:not(.formDialogFooter-clear) {
+  background-color: rgba(14, 17, 33, 0.65) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+body:not(.dashboardDocument) .MuiAccordion-root {
+  background-color: #15192f !important;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px !important;
+  margin-bottom: 6px;
+}
+
+body:not(.dashboardDocument) .MuiAccordion-root::before {
+  display: none;
+}
+
+body:not(.dashboardDocument) .MuiMenu-paper .MuiMenuItem-root {
+  border-radius: 10px;
+  margin: 2px 6px;
+  min-height: 40px;
+  transition: background-color 130ms ease;
+}
+
+body:not(.dashboardDocument) .MuiMenu-paper .MuiMenuItem-root:hover,
+body:not(.dashboardDocument) .MuiMenu-paper .MuiMenuItem-root.Mui-selected {
+  background-color: rgba(183, 124, 255, 0.22) !important;
+}
+
+/* Tooltips & toasts */
+body:not(.dashboardDocument) .MuiTooltip-tooltip,
+body:not(.dashboardDocument) .toast,
+body:not(.dashboardDocument) .toastVisible {
+  background-color: #24193f !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(228, 176, 255, 0.36) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.50) !important;
+}
+
+body:not(.dashboardDocument) .infoBanner {
+  background-color: #231a40 !important;
+  border: 1px solid rgba(214, 174, 255, 0.28);
+  border-radius: 12px !important;
+  color: var(--text-primary) !important;
+}
+
+/* Spinner LGBT+ 4-color layers */
+body:not(.dashboardDocument) .mdl-spinner__layer-1 { border-color: #ff5c8a !important; }
+body:not(.dashboardDocument) .mdl-spinner__layer-2 { border-color: #ffbe55 !important; }
+body:not(.dashboardDocument) .mdl-spinner__layer-3 { border-color: #54c6ff !important; }
+body:not(.dashboardDocument) .mdl-spinner__layer-4 { border-color: #c084fc !important; }
+
+/* --------------------------------------------------------------------------
+   12. DEVICE INTERACTIONS: MOUSE, TOUCH, SMART TV (10-FOOT) & A11Y
+   -------------------------------------------------------------------------- */
+
+/* Fine hover */
+@media (hover: hover) and (pointer: fine) {
+  body:not(.dashboardDocument) .card:hover .cardScalable {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px rgba(6, 4, 18, 0.62), 0 0 18px rgba(192, 108, 255, 0.22) !important;
+  }
+
+  body:not(.dashboardDocument) .card:hover .cardImageContainer {
+    box-shadow: inset 0 0 0 2px rgba(232, 168, 255, 0.85);
+  }
+
+  body:not(.dashboardDocument) .mainDetailButtons .btnPlay:hover,
+  body:not(.dashboardDocument) .mainDetailButtons .btnResume:hover,
+  body:not(.dashboardDocument) .button-submit:hover,
+  body:not(.dashboardDocument) .MuiButton-containedPrimary:hover {
+    background-image: var(--pride-cta-hover) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 26px rgba(206, 58, 172, 0.48) !important;
+  }
+
+  body:not(.dashboardDocument) .mainDetailButtons .detailButton:not(.btnPlay):not(.btnResume):hover,
+  body:not(.dashboardDocument) .mainDetailButtons .paper-icon-button-light:not(.btnPlay):not(.btnResume):hover {
+    background-color: rgba(147, 70, 245, 0.28) !important;
+    border-color: rgba(232, 182, 255, 0.52) !important;
+  }
+
+  body:not(.dashboardDocument) .MuiToolbar-root .MuiIconButton-root:hover,
+  body:not(.dashboardDocument) .MuiToolbar-root .MuiButton-root:hover,
+  body:not(.dashboardDocument) .MuiToolbar-root .headerButton:hover,
+  body:not(.dashboardDocument) .emby-tab-button:hover {
+    background-color: rgba(183, 124, 255, 0.18) !important;
+    color: #ffffff !important;
+  }
+
+  body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root:hover:not(.Mui-selected),
+  body:not(.dashboardDocument) .mainDrawer .navMenuOption:hover:not(.navMenuOption-selected),
+  body:not(.dashboardDocument) .listItem:hover {
+    background-color: rgba(183, 124, 255, 0.14) !important;
+  }
+}
+
+/* Touch targets */
+@media (pointer: coarse) {
+  body:not(.dashboardDocument) .cardOverlayButton,
+  body:not(.dashboardDocument) .paper-icon-button-light,
+  body:not(.dashboardDocument) .headerButton {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Keyboard focus visible */
+body:not(.dashboardDocument) :focus-visible {
+  outline: 2.5px solid var(--focus-ring) !important;
+  outline-offset: 2px;
+}
+
+body:not(.dashboardDocument) .MuiToolbar-root .MuiButtonBase-root:focus-visible,
+body:not(.dashboardDocument) .MuiMenu-paper .MuiMenuItem-root.Mui-focusVisible,
+body:not(.dashboardDocument) .MuiDrawer-paper .MuiListItemButton-root:focus-visible {
+  outline: 2.5px solid var(--focus-ring) !important;
+  outline-offset: -2px !important;
+  background-color: rgba(183, 124, 255, 0.24) !important;
+}
+
+body:not(.dashboardDocument) .card:focus-visible .cardImageContainer,
+body:not(.dashboardDocument) .card.show-focus:focus .cardImageContainer {
+  outline: 3px solid var(--focus-ring) !important;
+  outline-offset: -3px !important;
+  box-shadow: 0 0 0 4px var(--focus-glow), 0 14px 32px rgba(0, 0, 0, 0.65) !important;
+}
+
+body:not(.dashboardDocument) .card:focus-within .cardOverlayContainer,
+body:not(.dashboardDocument) .cardOverlayButton:focus-visible {
+  opacity: 1 !important;
+}
+
+/* SMART TV 10-FOOT INTERFACE (html.layout-tv — LG webOS, Samsung Tizen, Android TV, HTPC) */
+html.layout-tv {
+  --rounded-cards: 16px;
+  --jf-card-borderRadius: 16px;
+}
+
+html.layout-tv * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html.layout-tv body:not(.dashboardDocument) .emby-tab-button {
+  min-height: 46px !important;
+  padding: 0 20px !important;
+  font-size: 1.05rem !important;
+}
+
+html.layout-tv body:not(.dashboardDocument) .card:focus .cardImageContainer,
+html.layout-tv body:not(.dashboardDocument) .card:focus-within .cardImageContainer {
+  outline: 3.5px solid #f7ccff !important;
+  outline-offset: -3px !important;
+  box-shadow: 0 0 0 6px rgba(196, 102, 255, 0.45), 0 18px 38px rgba(0, 0, 0, 0.75) !important;
+}
+
+html.layout-tv body:not(.dashboardDocument) .card:focus .cardText:not(.cardText-secondary) {
+  color: #ffffff !important;
+}
+
+html.layout-tv body:not(.dashboardDocument) button:focus,
+html.layout-tv body:not(.dashboardDocument) a:focus,
+html.layout-tv body:not(.dashboardDocument) .listItem:focus,
+html.layout-tv body:not(.dashboardDocument) .emby-button:focus,
+html.layout-tv body:not(.dashboardDocument) .paper-icon-button-light:focus {
+  outline: 3px solid #f7ccff !important;
+  outline-offset: 2px !important;
+}
+
+html.layout-tv body:not(.dashboardDocument) .listItem:focus,
+html.layout-tv body:not(.dashboardDocument) .guide-channelHeaderCell:focus,
+html.layout-tv body:not(.dashboardDocument) .programCell:focus {
+  background-color: rgba(164, 80, 240, 0.34) !important;
+  color: #ffffff !important;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  body:not(.dashboardDocument) .cardText-secondary,
+  body:not(.dashboardDocument) .secondaryText,
+  body:not(.dashboardDocument) .fieldDescription {
+    color: #e6ebf8 !important;
+  }
+
+  body:not(.dashboardDocument) .cardImageContainer,
+  body:not(.dashboardDocument) .emby-input,
+  body:not(.dashboardDocument) .MuiAppBar-root.MuiAppBar-root {
+    border-color: rgba(242, 208, 255, 0.58) !important;
+  }
+}
+
+@media (forced-colors: active) {
+  body:not(.dashboardDocument) .cardScalable,
+  body:not(.dashboardDocument) .cardBox,
+  body:not(.dashboardDocument) .MuiAppBar-root.MuiAppBar-root {
+    box-shadow: none !important;
+    border: 1px solid CanvasText !important;
+  }
+}
